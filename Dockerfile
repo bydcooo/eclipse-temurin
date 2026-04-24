@@ -1,10 +1,10 @@
 FROM eclipse-temurin:8-jdk-ubi10-minimal
 
-# 1. 安装 epel-release
-# 2. 安装 rpmfusion-free 仓库 (这是提供 ffmpeg 的源)
-# 3. 安装 ffmpeg
-# 4. 清理以减小镜像体积
-RUN microdnf install -y epel-release && \
-    microdnf install -y https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-10.noarch.rpm && \
-    microdnf install -y ffmpeg && \
+# 下载并解压静态版 ffmpeg
+RUN microdnf install -y tar xz && \
+    curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar -xJ && \
+    mv ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/ && \
+    mv ffmpeg-*-amd64-static/ffprobe /usr/local/bin/ && \
+    rm -rf ffmpeg-*-amd64-static && \
+    microdnf remove -y tar xz && \
     microdnf clean all
